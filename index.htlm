@@ -1,0 +1,349 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Sun, Moon, Heart, Clock, MapPin, Phone, CheckCircle, Calendar, Coins, Leaf, Sparkles, Smile } from 'lucide-react';
+
+// --- アニメーションコンポーネント ---
+// スクロールに合わせて、呼吸をするようにゆっくりと要素が現れます
+const FadeInSection = ({ children, delay = 0 }) => {
+  const [isVisible, setVisible] = useState(false);
+  const domRef = useRef();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    const currentRef = domRef.current;
+    if (currentRef) observer.observe(currentRef);
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={domRef}
+      className={`transition-all duration-1000 ease-out transform ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// --- ゆるカワなロバのイラストコンポーネント ---
+const CuteDonkey = ({ className }) => (
+  <svg viewBox="0 0 200 200" className={className} xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(100, 100)">
+      {/* 柔らかい光の背景 */}
+      <circle cx="0" cy="0" r="90" fill="#FFF3E0" className="dark:fill-orange-900/20" />
+      {/* 耳 */}
+      <path d="M-30,-40 C-50,-80 -20,-90 -10,-40 Z" fill="#D7CCC8" />
+      <path d="M30,-40 C50,-80 20,-90 10,-40 Z" fill="#D7CCC8" />
+      <path d="M-28,-45 C-40,-70 -25,-75 -15,-45 Z" fill="#F5E6E6" />
+      <path d="M28,-45 C40,-70 25,-75 15,-45 Z" fill="#F5E6E6" />
+      {/* 顔の輪郭 */}
+      <ellipse cx="0" cy="10" rx="55" ry="45" fill="#EFEBE9" />
+      {/* 鼻周り */}
+      <ellipse cx="0" cy="30" rx="35" ry="25" fill="#FFF" />
+      {/* にっこり目 */}
+      <path d="M-25,-5 Q-15,-15 -5,-5" fill="none" stroke="#5D4037" strokeWidth="4" strokeLinecap="round" />
+      <path d="M25,-5 Q15,-15 5,-5" fill="none" stroke="#5D4037" strokeWidth="4" strokeLinecap="round" />
+      {/* ほっぺ */}
+      <ellipse cx="-30" cy="10" rx="8" ry="5" fill="#FFCDD2" opacity="0.6" />
+      <ellipse cx="30" cy="10" rx="8" ry="5" fill="#FFCDD2" opacity="0.6" />
+      {/* 優しい口 */}
+      <path d="M-10,30 Q0,40 10,30" fill="none" stroke="#5D4037" strokeWidth="3" strokeLinecap="round" />
+      {/* バンダナ（働くロバの象徴） */}
+      <path d="M-40,40 Q0,60 40,40 L0,70 Z" fill="#FF9800" />
+      <circle cx="0" cy="50" r="4" fill="#FFF" />
+      <circle cx="-15" cy="45" r="3" fill="#FFF" />
+      <circle cx="15" cy="45" r="3" fill="#FFF" />
+    </g>
+  </svg>
+);
+
+export default function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    // ページロード時にフォントを設定し、全体に柔らかさを持たせる
+    document.body.style.fontFamily = "'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', 'Meiryo', sans-serif";
+    
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+  // カスタムカラーパレット
+  const themeClasses = "min-h-screen transition-colors duration-700 ease-in-out bg-[#FFFDF8] dark:bg-[#2D2825] text-[#5A4A42] dark:text-[#EAE0D5]";
+
+  return (
+    <div className={themeClasses}>
+      {/* ヘッダー */}
+      <header className="fixed top-0 w-full z-50 bg-[#FFFDF8]/80 dark:bg-[#2D2825]/80 backdrop-blur-md border-b border-orange-100 dark:border-orange-900/30 transition-colors duration-500">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+          <h1 className="text-xl font-bold flex items-center gap-2 text-orange-500">
+            <Leaf className="w-5 h-5" />
+            <span>ちいろばの家</span>
+          </h1>
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full bg-orange-50 dark:bg-stone-800 text-orange-400 dark:text-orange-300 hover:scale-110 transition-transform duration-300"
+            aria-label="テーマ切り替え"
+          >
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+        </div>
+      </header>
+
+      <main className="pt-24 pb-20">
+        
+        {/* 1. ヒーローセクション */}
+        <section className="relative max-w-5xl mx-auto px-6 pt-10 pb-20 flex flex-col md:flex-row items-center gap-10">
+          <div className="flex-1 space-y-6 z-10">
+            <FadeInSection>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-300 text-sm font-medium mb-4">
+                <Sparkles className="w-4 h-4" />
+                Web Designer Portfolio
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+                優しさが循環する、<br />
+                <span className="text-orange-500">笑顔の架け橋。</span>
+              </h2>
+            </FadeInSection>
+            
+            <FadeInSection delay={200}>
+              <p className="text-lg leading-relaxed opacity-90">
+                色彩検定級の知識と、確かなコーディング技術で形にする事業所の想い。<br />
+                「ハンディキャップがあるが頑張る」<br />
+                そんな一人ひとりの輝きを、温かなデザインで社会へと繋ぎます。
+              </p>
+            </FadeInSection>
+          </div>
+          
+          <div className="flex-1 w-full max-w-md relative">
+            <FadeInSection delay={400}>
+              <div className="relative">
+                <div className="absolute inset-0 bg-orange-200 dark:bg-orange-800/40 rounded-[3rem] rotate-3 scale-105 opacity-50 blur-lg animate-pulse"></div>
+                <div className="relative bg-white dark:bg-stone-800 rounded-[3rem] shadow-xl p-8 border border-orange-50 dark:border-stone-700">
+                  <CuteDonkey className="w-full h-auto drop-shadow-md" />
+                  <p className="text-center mt-4 text-sm font-medium opacity-70">今日も笑顔でお仕事中！</p>
+                </div>
+              </div>
+            </FadeInSection>
+          </div>
+        </section>
+
+        {/* 2. 自己紹介セクション */}
+        <section className="bg-orange-50/50 dark:bg-stone-800/50 py-20">
+          <div className="max-w-4xl mx-auto px-6">
+            <FadeInSection>
+              <div className="text-center mb-12">
+                <h3 className="text-3xl font-bold mb-4 text-orange-500">特定非営利活動法人 ちいろの家</h3>
+                <div className="w-16 h-1 bg-orange-300 mx-auto rounded-full"></div>
+              </div>
+            </FadeInSection>
+
+            <div className="flex flex-col md:flex-row gap-10 items-center bg-white dark:bg-stone-800 rounded-3xl p-8 md:p-12 shadow-sm border border-orange-100 dark:border-stone-700">
+              <FadeInSection delay={200}>
+                <div className="w-40 h-40 shrink-0 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center border-4 border-white dark:border-stone-700 shadow-md">
+                   <Smile className="w-20 h-20 text-orange-400" />
+                </div>
+              </FadeInSection>
+              <FadeInSection delay={400}>
+                <p className="text-lg leading-loose">
+                  「ようこそ！多摩市で『ちいろばの家』というリサイクルショップをしているお店です！
+                  沢山のお宝があるのと、価格がとにかく安いので、是非足を運んでもらえると、良さが分かります。<br /><br />
+                  しかしあくまで非営利活動法人なので、買取りはしてなく、回収日も決まっており、地域の方々のおかげで、ハンディキャップのある方との架け橋になれる楽しいお店を目指しております」
+                </p>
+              </FadeInSection>
+            </div>
+          </div>
+        </section>
+
+        {/* 3. 由来 ＆ 4. 活動内容 */}
+        <section className="max-w-5xl mx-auto px-6 py-20">
+          <div className="grid md:grid-cols-2 gap-12">
+            
+            {/* 由来 */}
+            <FadeInSection>
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold flex items-center gap-3">
+                  <Heart className="w-6 h-6 text-orange-500" />
+                  「ちいろばの家」の由来
+                </h3>
+                <div className="prose dark:prose-invert prose-orange leading-loose opacity-90">
+                  <p>
+                    「ちいろば」とは「ちいさいろばの子」を略した俗語です。<br />
+                    わたしたちは、働きものの「ろば」がそうであるように、重い荷物や障がいを担いあって生きていきたい。<br />
+                    また、この場所をそういう思いをもつ人たちが集まる「家」のようなところにしていきたい願いをこめて「ちいろばの家」と名づけました。
+                  </p>
+                  <p>
+                    ちいろばは市民の方々による寄付でなりたっています。<br />
+                    わたしたちも設立当初の思い「人と物を大切に」を胸に、これからもひとりでも多くの仲間が増えるようにがんばっていきたいと思いますのでご協力とご理解をお願いします。
+                  </p>
+                </div>
+              </div>
+            </FadeInSection>
+
+            {/* 活動内容 */}
+            <FadeInSection delay={200}>
+              <div className="bg-orange-100/30 dark:bg-stone-800/80 rounded-3xl p-8 h-full border border-orange-100 dark:border-stone-700">
+                <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                  <CheckCircle className="w-6 h-6 text-orange-500" />
+                  主な活動・取り組み
+                </h3>
+                <ul className="space-y-4">
+                  {[
+                    "リサイクル品の整理、清掃、仕分け（判断力、清掃能力、共同作業時の対応力への取組み）",
+                    "販売（接客能力、言葉づかい、身だしなみ、トラブル対応能力への取組み）",
+                    "リサイクル品の回収（体力向上、接客態度に対する知識への取組み）",
+                    "お店を通じての社会体験",
+                    "会議を通して、みんなでお店を運営しているという思いの共通化"
+                  ].map((item, i) => (
+                    <li key={i} className="flex gap-3 text-base leading-relaxed">
+                      <Leaf className="w-5 h-5 text-orange-400 shrink-0 mt-1" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </FadeInSection>
+          </div>
+        </section>
+
+        {/* 5. 寄付型ショップ ＆ 8. 良いポイント */}
+        <section className="bg-[#FAF3E8] dark:bg-[#352F2C] py-20 relative overflow-hidden">
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
+            <FadeInSection>
+              <div className="text-center mb-10">
+                <h3 className="text-3xl font-bold mb-4">寄付型のリサイクルショップです</h3>
+                <p className="text-lg opacity-90 max-w-2xl mx-auto">
+                  ちいろばの家は買い取り型ではなく、地域からの寄付品をきれいに整えて販売している仕組みになっています。
+                </p>
+              </div>
+            </FadeInSection>
+
+            <div className="grid sm:grid-cols-2 gap-6 mb-12">
+              <FadeInSection delay={100}>
+                <div className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm h-full">
+                  <h4 className="font-bold text-lg mb-4 text-orange-600 dark:text-orange-400">主な取り扱い品目</h4>
+                  <ul className="space-y-2 text-sm opacity-90">
+                    <li>• 衣類（季節服・カジュアル服・子ども服など）</li>
+                    <li>• 日用雑貨（食器、キッチン用品、小物など）</li>
+                    <li>• 本・雑誌</li>
+                    <li>• 文房具、小さなギフト雑貨</li>
+                    <li>• 小型家電・小物工具（稼働品・清掃済のもの）</li>
+                    <li>• 掘り出し物系の商品（ヴィンテージや特価品）</li>
+                  </ul>
+                  <p className="mt-4 text-xs text-orange-500 font-medium">※ 大型家具や大型家電類は現在ほとんど取り扱いがございません。</p>
+                </div>
+              </FadeInSection>
+
+              <FadeInSection delay={200}>
+                <div className="bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm p-6 rounded-2xl shadow-sm h-full">
+                  <h4 className="font-bold text-lg mb-4 text-orange-600 dark:text-orange-400">🌱 利用するときの良いポイント</h4>
+                  <ul className="space-y-3 text-sm opacity-90">
+                    <li className="flex gap-2 items-start"><Sparkles className="w-4 h-4 mt-0.5 text-orange-400 shrink-0"/>一点ものの商品が多く、宝探しのような発見の楽しみ</li>
+                    <li className="flex gap-2 items-start"><Sparkles className="w-4 h-4 mt-0.5 text-orange-400 shrink-0"/>物を捨てるのではなく、循環させるエコな選択</li>
+                    <li className="flex gap-2 items-start"><Sparkles className="w-4 h-4 mt-0.5 text-orange-400 shrink-0"/>障がいのある方たちの社会参加・就労支援につながる</li>
+                    <li className="flex gap-2 items-start"><Sparkles className="w-4 h-4 mt-0.5 text-orange-400 shrink-0"/>地域コミュニティへの貢献と繋がるあたたかい機会</li>
+                  </ul>
+                </div>
+              </FadeInSection>
+            </div>
+          </div>
+        </section>
+
+        {/* 6. 回収サービス ＆ 7, 9, 10 インフォメーション */}
+        <section className="max-w-5xl mx-auto px-6 py-20">
+          <FadeInSection>
+            <div className="bg-orange-50 dark:bg-stone-800 rounded-[2rem] p-8 md:p-12 shadow-sm border border-orange-100 dark:border-stone-700">
+              <h3 className="text-2xl font-bold mb-8 text-center">ご利用案内・アクセス</h3>
+              
+              <div className="grid md:grid-cols-2 gap-10">
+                {/* 左カラム：営業・回収情報 */}
+                <div className="space-y-8">
+                  <div>
+                    <h4 className="flex items-center gap-2 font-bold text-lg mb-3 border-b-2 border-orange-200 dark:border-stone-600 pb-2">
+                      <Clock className="w-5 h-5 text-orange-500" />
+                      営業時間・受付
+                    </h4>
+                    <ul className="space-y-2 opacity-90">
+                      <li>営業時間：10:30〜18:00</li>
+                      <li>回収予約受付：10:30〜17:00</li>
+                      <li>定休日：原則祝日</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="flex items-center gap-2 font-bold text-lg mb-3 border-b-2 border-orange-200 dark:border-stone-600 pb-2">
+                      <Calendar className="w-5 h-5 text-orange-500" />
+                      不要品回収スケジュール（多摩市内）
+                    </h4>
+                    <p className="text-sm mb-2 opacity-90">完全予約制です。事前にお電話でお申し込みください。</p>
+                    <ul className="space-y-1 opacity-90">
+                      <li>・毎週 火曜日</li>
+                      <li>・毎週 木曜日</li>
+                      <li>・毎週 土曜日（午前のみ）</li>
+                    </ul>
+                  </div>
+                  
+                  <div>
+                    <h4 className="flex items-center gap-2 font-bold text-lg mb-3 border-b-2 border-orange-200 dark:border-stone-600 pb-2">
+                      <Coins className="w-5 h-5 text-orange-500" />
+                      お支払いについて
+                    </h4>
+                    <p className="opacity-90">現金払いのみとなっております。</p>
+                  </div>
+                </div>
+
+                {/* 右カラム：アクセス・問い合わせ */}
+                <div className="space-y-8">
+                  <div>
+                    <h4 className="flex items-center gap-2 font-bold text-lg mb-3 border-b-2 border-orange-200 dark:border-stone-600 pb-2">
+                      <MapPin className="w-5 h-5 text-orange-500" />
+                      アクセス
+                    </h4>
+                    <p className="opacity-90 leading-relaxed mb-3">
+                      〒206-0003<br />
+                      東京都多摩市東寺方１丁目１６−３<br />
+                      <span className="text-sm">（聖蹟桜ヶ丘駅西側から徒歩10分程度）</span>
+                    </p>
+                    <div className="bg-white dark:bg-stone-700 p-3 rounded-lg text-sm text-center font-medium border border-orange-100 dark:border-stone-600">
+                      駐車場 10台完備
+                    </div>
+                  </div>
+
+                  <div className="bg-orange-500 text-white rounded-2xl p-6 text-center shadow-md transform hover:scale-105 transition-transform duration-300">
+                    <p className="text-sm mb-2 opacity-90">お問い合わせ・回収のご予約はこちら</p>
+                    <a href="tel:042-372-3015" className="flex items-center justify-center gap-3 text-2xl md:text-3xl font-bold">
+                      <Phone className="w-6 h-6 md:w-8 md:h-8" />
+                      042-372-3015
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </FadeInSection>
+        </section>
+
+      </main>
+
+      {/* フッター */}
+      <footer className="bg-orange-100/50 dark:bg-[#221D1B] py-8 text-center text-sm opacity-70">
+        <p>© 特定非営利活動法人 ちいろの家 / Web Designer Portfolio</p>
+      </footer>
+    </div>
+  );
+}
